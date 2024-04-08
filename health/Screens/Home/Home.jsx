@@ -1,12 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { Camera, CameraType } from 'expo-camera';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import colors from '../../components/pallets';
-import Text from '../../components/Text';
-import useHeaderHeight from '../../hooks/getHeight';
-import Button from '../../components/Button';
+import React, { useEffect, useState } from "react";
+import { Camera, CameraType } from "expo-camera";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
+import colors from "../../components/pallets";
+import Text from "../../components/Text";
+import useHeaderHeight from "../../hooks/getHeight";
+import Button from "../../components/Button";
+import { useNavigation } from "@react-navigation/native";
+import Header from "../../components/Header";
 
 const Home = () => {
+  const navigation = useNavigation();
   const { insets } = useHeaderHeight();
   const [hasAudioPermission, setHasAudioPermission] = useState(null);
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
@@ -19,10 +22,10 @@ const Home = () => {
   useEffect(() => {
     (async () => {
       const cameraStatus = await Camera.requestCameraPermissionsAsync();
-      setHasCameraPermission(cameraStatus.status === 'granted');
+      setHasCameraPermission(cameraStatus.status === "granted");
 
       const audioStatus = await Camera.requestMicrophonePermissionsAsync();
-      setHasAudioPermission(audioStatus.status === 'granted');
+      setHasAudioPermission(audioStatus.status === "granted");
     })();
   }, []);
   const takeVideo = async () => {
@@ -38,7 +41,7 @@ const Home = () => {
   const stopVideo = async () => {
     camera.stopRecording();
     console.log(record);
-    console.log('video stopped');
+    console.log("video stopped");
   };
   function toggleCameraType() {
     setType((current) =>
@@ -57,17 +60,18 @@ const Home = () => {
     <View>
       <View style={{ height: insets.top }} />
       <View style={styles.container}>
-        <Text
-          style={{ marginTop: 46, marginBottom: 151 }}
-          fontWeight="700"
-          children={'Home'}
-        />
-
-        <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-          <Camera
+        <Header />
+        <View
+          style={{
+            maginTop: 15,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          {/* <Camera
             ref={(ref) => setCamera(ref)}
             style={styles.camera}
-            ratio={'4:3'}
+            ratio={"4:3"}
             type={type}
           >
             <View style={styles.buttonContainer}>
@@ -83,9 +87,7 @@ const Home = () => {
                     width: 50,
                     height: 50,
                   }}
-                >
-                  {/* <Text>R</Text> */}
-                </TouchableOpacity>
+                ></TouchableOpacity>
               ) : (
                 <TouchableOpacity
                   onPress={() => {
@@ -98,43 +100,10 @@ const Home = () => {
                     width: 100,
                     height: 100,
                   }}
-                >
-                  {/* <Text>R</Text> */}
-                </TouchableOpacity>
+                ></TouchableOpacity>
               )}
-
-              {/* <TouchableOpacity
-                style={styles.button}
-                onPress={toggleCameraType}
-              >
-                <Text style={styles.text}>Flip Camera</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.button} onPress={takeVideo}>
-                <Text style={styles.text}>record</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.button} onPress={stopVideo}>
-                <Text style={styles.text}>Stop record</Text>
-              </TouchableOpacity> */}
             </View>
-          </Camera>
-          {/* <Camera
-          ref={(ref) => setCamera(ref)}
-          style={styles.fixedRatio}
-          type={type}
-          ratio={'4:3'}
-        />
-        <Button
-          text="Flip Video"
-          onPress={() => {
-            setType(
-              type === Camera.Constants.Type.back
-                ? Camera.Constants.Type.front
-                : Camera.Constants.Type.back
-            );
-          }}
-        ></Button>
-        <Button text="Take video" onPress={() => handleVideo()} />
-        <Button text="Stop Video" onPress={() => stopVideo()} /> */}
+          </Camera> */}
         </View>
       </View>
     </View>
@@ -148,22 +117,22 @@ const styles = StyleSheet.create({
   },
   camera: {
     height: 400,
-    width: '100%',
+    width: "100%",
     // flex: 1,
   },
   buttonContainer: {
     // flex: 1,
     marginTop: 300,
-    alignItems: 'center',
+    alignItems: "center",
   },
   button: {
     // flex: 1,
-    alignSelf: 'flex-end',
-    alignItems: 'center',
+    alignSelf: "flex-end",
+    alignItems: "center",
   },
   text: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: 'white',
+    fontWeight: "bold",
+    color: "white",
   },
 });

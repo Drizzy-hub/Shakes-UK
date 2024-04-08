@@ -22,6 +22,7 @@ const Text = ({
   style,
   fontWeight = '400',
   color,
+  onPress,
   fontSize,
   textAlign,
   lineHeight,
@@ -33,6 +34,7 @@ const Text = ({
     <RNText
       maxFontSizeMultiplier={1.3}
       minimumFontScale={0.7}
+      onPress={onPress}
       style={[
         {
           color: color || pallets.text,

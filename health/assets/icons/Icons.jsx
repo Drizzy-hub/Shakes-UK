@@ -1,5 +1,5 @@
-import * as React from 'react';
-import Svg, { Path } from 'react-native-svg';
+import * as React from "react";
+import Svg, { ClipPath, Defs, G, Mask, Path } from "react-native-svg";
 
 export default function Icons({ name, size = 24, ...props }) {
   const IconMap = {
@@ -31,6 +31,50 @@ export default function Icons({ name, size = 24, ...props }) {
         />
       </>
     ),
+    user: (
+      <>
+        <G clipPath="url(#a)">
+          <Mask
+            id="b"
+            width={56}
+            height={56}
+            x={0}
+            y={0}
+            maskUnits="userSpaceOnUse"
+            style={{
+              maskType: "alpha",
+            }}
+          >
+            <Path
+              fill="#fff"
+              d="M56 28C56 12.536 43.464 0 28 0S0 12.536 0 28s12.536 28 28 28 28-12.536 28-28Z"
+            />
+          </Mask>
+          <G mask="url(#b)">
+            <Path fill="#FEB052" d="M56 0H0v56h56V0Z" />
+            <Path
+              fill="#4894FE"
+              d="m63.268-1.648-44.466 5.46c-6.14.753-10.506 6.342-9.752 12.481l5.46 44.466c.754 6.14 6.342 10.506 12.481 9.752l44.466-5.46c6.14-.754 10.506-6.342 9.752-12.482L75.75 8.103c-.753-6.139-6.342-10.505-12.481-9.751Z"
+            />
+            <Path
+              stroke="#fff"
+              strokeLinecap="round"
+              strokeWidth={2.222}
+              d="M29.029 31.349c3.188 1.39 6.295 1.228 9.32-.489"
+            />
+            <Path
+              fill="#fff"
+              d="M24.656 22.232c-.044-.858-.603-1.526-1.246-1.492-.643.033-1.129.756-1.084 1.614.045.858.603 1.526 1.247 1.492.643-.033 1.128-.756 1.083-1.614ZM43.297 21.255c-.044-.858-.602-1.526-1.246-1.492-.643.033-1.129.756-1.084 1.614.045.858.603 1.526 1.247 1.492.643-.033 1.129-.756 1.084-1.614Z"
+            />
+          </G>
+        </G>
+        <Defs>
+          <ClipPath id="a">
+            <Path fill="#fff" d="M0 0h56v56H0z" />
+          </ClipPath>
+        </Defs>
+      </>
+    ),
   };
   return (
     <Svg
@@ -38,7 +82,7 @@ export default function Icons({ name, size = 24, ...props }) {
       width={size}
       height={size}
       // {...{ onPress }}
-      viewBox="0 0 24 24"
+      // viewBox="0 0 24 24"
       fill="none"
     >
       {IconMap[name]}
