@@ -10,14 +10,15 @@ import { getStorage } from "firebase/storage";
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+
 const firebaseConfig = {
-  apiKey: process.env.apiKey,
-  authDomain: process.env.authDomain,
-  projectId: process.env.projectId,
-  storageBucket: process.env.storageBucket,
-  messagingSenderId: process.env.messagingSenderId,
-  appId: process.env.appId,
-  measurementId: process.env.measurementId,
+  apiKey: process.env.EXPO_PUBLIC_API_KEY,
+  authDomain: process.env.EXPO_PUBLIC_AUTHDOMAIN,
+  projectId: process.env.EXPO_PUBLIC_PROJECTID,
+  storageBucket: process.env.EXPO_PUBLIC_STORAGEBUCKET,
+  messagingSenderId: process.env.EXPO_PUBLIC_MESSAGINGSENDERID,
+  appId: process.env.EXPO_PUBLIC_APPID,
+  measurementId: process.env.EXPO_PUBLIC_MEASUREMENTIS,
 };
 
 // Initialize Firebase
@@ -26,6 +27,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 const storage = getStorage();
+
 // const analytics = getAnalytics(app);
 
 export { auth, db, storage };
