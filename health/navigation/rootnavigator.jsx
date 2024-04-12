@@ -9,6 +9,13 @@ import { auth, db } from "../firebase";
 import { getDoc, doc } from "@firebase/firestore";
 import AppNavigator from "./appNavigator";
 
+const linking = {
+  config: {
+    initialRouteName: "Login",
+    screens: {},
+  },
+};
+
 export default function RootNavigator() {
   const { user, setUser, setUserName, setUserData, userData, userName } =
     useContext(AuthenticatedUserContext);
@@ -54,7 +61,7 @@ export default function RootNavigator() {
   }
 
   return (
-    <NavigationContainer>
+    <NavigationContainer linking={linking}>
       {user ? <AppNavigator /> : <AuthStack />}
     </NavigationContainer>
   );

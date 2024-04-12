@@ -18,7 +18,9 @@ const Header = () => {
       </View>
       <View>
         <TouchableOpacity
-          onPress={navigation.navigate("HomeStack", { screen: "Profile" })}
+          onPress={() =>
+            navigation.navigate("HomeStack", { screen: "Profile" })
+          }
         >
           <Icons size={58} name={"user"} />
         </TouchableOpacity>

@@ -15,8 +15,7 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import Icons, { IconName } from "../../assets/icons/Icons.jsx";
 import { auth } from "../../firebase";
 
-const Login = () => {
-  const navigation = useNavigation();
+const Login = ({ navigation }) => {
   const { insets } = useHeaderHeight();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -25,7 +24,7 @@ const Login = () => {
     try {
       if (email !== "" && password !== "") {
         await signInWithEmailAndPassword(auth, email, password).then(
-          navigation.navigate("Home")
+          navigation.navigate(("TabStack", { screen: "Home" }))
         );
       }
     } catch (error) {

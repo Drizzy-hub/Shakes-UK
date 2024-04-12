@@ -1,116 +1,89 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Camera, CameraType } from "expo-camera";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
 import colors from "../../components/pallets";
 import Text from "../../components/Text";
 import useHeaderHeight from "../../hooks/getHeight";
 import Button from "../../components/Button";
 import { useNavigation } from "@react-navigation/native";
 import Header from "../../components/Header";
+import { db, storage } from "../../firebase";
+import { ref, listAll, getDownloadURL } from "firebase/storage";
+import { collection, doc, getDocs, query, where } from "@firebase/firestore";
+import { AuthenticatedUserContext } from "../../provider/authProvider";
+import { Video } from "expo-av";
+// import { VideoThumbnails } from "expo-video-thumbnails";
 
-const Home = () => {
-  const navigation = useNavigation();
+const Home = ({ navigation }) => {
+  const { user, setUser } = useContext(AuthenticatedUserContext);
   const { insets } = useHeaderHeight();
-  const [hasAudioPermission, setHasAudioPermission] = useState(null);
-  const [hasCameraPermission, setHasCameraPermission] = useState(null);
-  const [camera, setCamera] = useState(null);
-  const [record, setRecord] = useState(null);
-  const [type, setType] = useState(Camera.Constants.Type.front);
-  const [isRecording, setIsRecording] = useState(false);
-  const video = React.useRef(null);
-  const [status, setStatus] = React.useState({});
-  useEffect(() => {
-    (async () => {
-      const cameraStatus = await Camera.requestCameraPermissionsAsync();
-      setHasCameraPermission(cameraStatus.status === "granted");
+  const [videos, setVideos] = useState([]);
 
-      const audioStatus = await Camera.requestMicrophonePermissionsAsync();
-      setHasAudioPermission(audioStatus.status === "granted");
-    })();
+  useEffect(() => {
+    fetchVideos();
   }, []);
-  const takeVideo = async () => {
-    if (camera) {
-      const data = await camera.recordAsync({});
-      setRecord(data.uri);
-      console.log(data.uri);
+  const fetchVideos = async () => {
+    try {
+      const storageRef = ref(storage, `video/${user.uid}`);
+      const listResult = await listAll(storageRef);
+      const videoUrls = [];
+      for (const itemRef of listResult.items) {
+        const downloadURL = await getDownloadURL(itemRef);
+        videoUrls.push({ url: downloadURL });
+      }
+      setVideos(videoUrls);
+      // console.log(videoUrls, "videos fetched");
+    } catch (error) {
+      console.error("Error fetching videos:", error);
     }
   };
-  const IconControl = () => {
-    setIsRecording(!isRecording);
-  };
-  const stopVideo = async () => {
-    camera.stopRecording();
-    console.log(record);
-    console.log("video stopped");
-  };
-  function toggleCameraType() {
-    setType((current) =>
-      current === CameraType.back ? CameraType.front : CameraType.back
-    );
-  }
 
-  if (hasCameraPermission === null || hasAudioPermission === null) {
-    return <View />;
-  }
-  if (hasCameraPermission === false || hasAudioPermission === false) {
-    return <Text>No access to camera</Text>;
-  }
+  const renderVideoItem = ({ item }) => (
+    <TouchableOpacity onPress={() => handleVideoPress(item.url)}>
+      <View style={{ marginVertical: 10 }}>
+        <Video
+          source={{ uri: item.url }}
+          style={{ width: "100%", height: 200, paddingHorizontal: 24 }}
+          useNativeControls={true}
+          resizeMode="contain"
+        />
+      </View>
+    </TouchableOpacity>
+  );
 
+  const handleVideoPress = (videoUrl) => {
+    // Open the video to be played
+    console.log("Video clicked:", videoUrl);
+    // You can add navigation logic here to navigate to a screen where the video is played
+  };
   return (
     <View>
       <View style={{ height: insets.top }} />
       <View style={styles.container}>
         <Header />
-        <View
-          style={{
-            maginTop: 15,
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          {/* <Camera
-            ref={(ref) => setCamera(ref)}
-            style={styles.camera}
-            ratio={"4:3"}
-            type={type}
-          >
-            <View style={styles.buttonContainer}>
-              {isRecording ? (
-                <TouchableOpacity
-                  onPress={() => {
-                    stopVideo();
-                    IconControl();
-                  }}
-                  style={{
-                    borderRadius: 10,
-                    backgroundColor: colors.red,
-                    width: 50,
-                    height: 50,
-                  }}
-                ></TouchableOpacity>
-              ) : (
-                <TouchableOpacity
-                  onPress={() => {
-                    takeVideo();
-                    IconControl();
-                  }}
-                  style={{
-                    borderRadius: 100,
-                    backgroundColor: colors.red,
-                    width: 100,
-                    height: 100,
-                  }}
-                ></TouchableOpacity>
-              )}
+      </View>
+      <View>
+        <FlatList
+          data={videos}
+          ListHeaderComponent={
+            <View style={{ paddingHorizontal: 24 }}>
+              <Text style={{ marginTop: 40 }} fontWeight="700">
+                Videos
+              </Text>
             </View>
-          </Camera> */}
-        </View>
+          }
+          ListFooterComponent={<View style={{ width: 16 }} />}
+          renderItem={renderVideoItem}
+          keyExtractor={(item) => item.url}
+          horizontal={false} // Set to true if you want the videos to be displayed horizontally
+        />
       </View>
     </View>
   );
 };
 
 export default Home;
+
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 24,
