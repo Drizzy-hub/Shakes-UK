@@ -5,7 +5,12 @@ import colors from "../../components/pallets";
 import Text from "../../components/Text";
 import useHeaderHeight from "../../hooks/getHeight";
 import Button from "../../components/Button";
-import { useNavigation } from "@react-navigation/native";
+import {
+  useFocusEffect,
+  useIsFocused,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
 import Header from "../../components/Header";
 import { AuthenticatedUserContext } from "../../provider/authProvider";
 import { addDoc, doc, serverTimestamp } from "@firebase/firestore";
@@ -18,6 +23,7 @@ import {
 } from "firebase/storage";
 
 const Viewvideo = () => {
+  const focused = useIsFocused();
   const { user, setUser } = useContext(AuthenticatedUserContext);
   const { insets } = useHeaderHeight();
   const [hasAudioPermission, setHasAudioPermission] = useState(null);
@@ -67,15 +73,34 @@ const Viewvideo = () => {
       })
       .catch((err) => console.log(err));
   };
-  useEffect(() => {
-    (async () => {
-      const cameraStatus = await Camera.requestCameraPermissionsAsync();
-      setHasCameraPermission(cameraStatus.status === "granted");
+  // useFocusEffect(() => {
+  //   (async () => {
+  //     const cameraStatus = await Camera.requestCameraPermissionsAsync();
+  //     setHasCameraPermission(cameraStatus.status === "granted");
 
-      const audioStatus = await Camera.requestMicrophonePermissionsAsync();
-      setHasAudioPermission(audioStatus.status === "granted");
-    })();
-  }, []);
+  //     const audioStatus = await Camera.requestMicrophonePermissionsAsync();
+  //     setHasAudioPermission(audioStatus.status === "granted");
+  //   })();
+  // }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const requestPermissions = async () => {
+        const cameraStatus = await Camera.requestCameraPermissionsAsync();
+        setHasCameraPermission(cameraStatus.status === "granted");
+
+        const audioStatus = await Camera.requestMicrophonePermissionsAsync();
+        setHasAudioPermission(audioStatus.status === "granted");
+      };
+
+      requestPermissions();
+
+      // Cleanup function
+      return () => {
+        // Optionally clean up camera resources here
+      };
+    }, [])
+  );
   const takeVideo = async () => {
     if (camera) {
       const data = await camera.recordAsync({});
@@ -138,42 +163,44 @@ const Viewvideo = () => {
             alignItems: "center",
           }}
         >
-          <Camera
-            ref={(ref) => setCamera(ref)}
-            style={styles.camera}
-            ratio={"4:3"}
-            type={type}
-          >
-            <View style={styles.buttonContainer}>
-              {isRecording ? (
-                <TouchableOpacity
-                  onPress={() => {
-                    stopVideo();
-                    IconControl();
-                  }}
-                  style={{
-                    borderRadius: 10,
-                    backgroundColor: colors.red,
-                    width: 50,
-                    height: 50,
-                  }}
-                ></TouchableOpacity>
-              ) : (
-                <TouchableOpacity
-                  onPress={() => {
-                    takeVideo();
-                    IconControl();
-                  }}
-                  style={{
-                    borderRadius: 100,
-                    backgroundColor: colors.red,
-                    width: 100,
-                    height: 100,
-                  }}
-                ></TouchableOpacity>
-              )}
-            </View>
-          </Camera>
+          {focused && (
+            <Camera
+              ref={(ref) => setCamera(ref)}
+              style={styles.camera}
+              ratio={"4:3"}
+              type={type}
+            >
+              <View style={styles.buttonContainer}>
+                {isRecording ? (
+                  <TouchableOpacity
+                    onPress={() => {
+                      stopVideo();
+                      IconControl();
+                    }}
+                    style={{
+                      borderRadius: 10,
+                      backgroundColor: colors.red,
+                      width: 50,
+                      height: 50,
+                    }}
+                  ></TouchableOpacity>
+                ) : (
+                  <TouchableOpacity
+                    onPress={() => {
+                      takeVideo();
+                      IconControl();
+                    }}
+                    style={{
+                      borderRadius: 100,
+                      backgroundColor: colors.red,
+                      width: 100,
+                      height: 100,
+                    }}
+                  ></TouchableOpacity>
+                )}
+              </View>
+            </Camera>
+          )}
         </View>
       </View>
     </View>

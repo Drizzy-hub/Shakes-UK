@@ -1,6 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Camera, CameraType } from "expo-camera";
-import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+  FlatList,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  RefreshControl,
+} from "react-native";
 import colors from "../../components/pallets";
 import Text from "../../components/Text";
 import useHeaderHeight from "../../hooks/getHeight";
@@ -65,6 +71,15 @@ const Home = ({ navigation }) => {
       <View>
         <FlatList
           data={videos}
+          refreshControl={
+            <RefreshControl
+              // Background color of the refresh indicator
+              colors={[colors.primaryBlue]}
+              // Text to display while refreshing
+              refreshing={false} // Set to true while data is being fetched
+              onRefresh={fetchVideos} // Function to call on pull to refresh
+            />
+          }
           ListHeaderComponent={
             <View style={{ paddingHorizontal: 24 }}>
               <Text style={{ marginTop: 40 }} fontWeight="700">
