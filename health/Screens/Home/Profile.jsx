@@ -8,13 +8,13 @@ import Input from "../../components/Input";
 import Button from "../../components/Button";
 import { AuthenticatedUserContext } from "../../provider/authProvider";
 import Icons from "../../assets/icons/Icons";
-import { doc, setDoc, updateDoc } from "@firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc } from "@firebase/firestore";
 import { db } from "../../firebase";
 
 const Profile = ({ navigation }) => {
   const { insets } = useHeaderHeight();
   const { userData, user } = useContext(AuthenticatedUserContext);
-  console.log(user, "data");
+  console.log(userData, "data");
 
   const [formData, setFormData] = useState({
     age: "",
@@ -26,20 +26,27 @@ const Profile = ({ navigation }) => {
   });
 
   useEffect(() => {
-    setFormData({
-      age: userData.age || "",
-      emotionalStability: userData.emotionalStability || "",
-      employmentStatus: userData.employmentStatus || "",
-      financialWorry: userData.financialWorry || "",
-      incomeSatisfaction: userData.incomeSatisfaction || "",
-      healthServiceSatisfaction: userData.healthServiceSatisfaction || "",
-    });
+    const fetchUserData = async () => {
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      if (userDoc.exists()) {
+        console.log(userDoc.data(), "new");
+      }
+      setFormData({
+        age: userDoc.data().age || "",
+        emotionalStability: userDoc.data().emotionalStability || "",
+        employmentStatus: userDoc.data().employmentStatus || "",
+        financialWorry: userDoc.data().financialWorry || "",
+        incomeSatisfaction: userDoc.data().incomeSatisfaction || "",
+        healthServiceSatisfaction:
+          userDoc.data().healthServiceSatisfaction || "",
+      });
+    };
+    fetchUserData();
   }, [userData]);
 
   const handleChange = (name, value) => {
     setFormData({ ...formData, [name]: value });
   };
-
   const saveData = async (field, value) => {
     try {
       await updateDoc(doc(db, "users", user.uid), { [field]: value });
