@@ -18,12 +18,15 @@ import { ref, listAll, getDownloadURL } from "firebase/storage";
 import { collection, doc, getDocs, query, where } from "@firebase/firestore";
 import { AuthenticatedUserContext } from "../../provider/authProvider";
 import { Video } from "expo-av";
+import { Dimensions } from "react-native";
+
 // import { VideoThumbnails } from "expo-video-thumbnails";
 
 const Home = ({ navigation }) => {
   const { user, setUser } = useContext(AuthenticatedUserContext);
   const { insets } = useHeaderHeight();
   const [videos, setVideos] = useState([]);
+  const { height } = Dimensions.get("window");
 
   useEffect(() => {
     fetchVideos();
@@ -70,6 +73,7 @@ const Home = ({ navigation }) => {
       </View>
       <View>
         <FlatList
+          style={{ height: height / 1.3 }}
           data={videos}
           refreshControl={
             <RefreshControl

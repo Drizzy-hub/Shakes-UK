@@ -33,6 +33,8 @@ const Viewvideo = () => {
   const [type, setType] = useState(Camera.Constants.Type.front);
   const [isRecording, setIsRecording] = useState(false);
   const video = React.useRef(null);
+  const [recordingStartTime, setRecordingStartTime] = useState(null);
+  const [recordingTimeout, setRecordingTimeout] = useState(null);
 
   const saveSoundAndUpdateDoc = async (writing, recordings) => {
     const timestamp = new Date().getTime(); // Generate a unique timestamp
@@ -106,16 +108,34 @@ const Viewvideo = () => {
       const data = await camera.recordAsync({});
       setRecord(data.uri);
       console.log(data.uri);
+
+      const timeout = setTimeout(stopVideo, 60000);
+      setRecordingTimeout(timeout);
     }
   };
   const IconControl = () => {
     setIsRecording(!isRecording);
   };
+
   const stopVideo = async () => {
+    if (recordingTimeout) {
+      clearTimeout(recordingTimeout);
+    }
+    const recordingDuration = Date.now() - recordingStartTime;
     camera.stopRecording();
-    console.log(record);
-    saveSoundAndUpdateDoc();
-    console.log("video stopped");
+    setIsRecording(false);
+
+    if (recordingDuration < 3000) {
+      Alert.alert(
+        "Recording too short",
+        "The video must be at least 3 seconds long."
+      );
+      setRecord(null);
+      console.log("Video recording was too short and was discarded.");
+    } else {
+      await saveSoundAndUpdateDoc();
+      console.log("Video stopped and saved.");
+    }
   };
   function toggleCameraType() {
     setType((current) =>
@@ -129,27 +149,6 @@ const Viewvideo = () => {
   if (hasCameraPermission === false || hasAudioPermission === false) {
     return <Text>No access to camera</Text>;
   }
-
-  // async function uploadImageAsync() {
-  //   const uri = record;
-  //   const blob = await new Promise((resolve, reject) => {
-  //     const xhr = new XMLHttpRequest();
-  //     xhr.onload = function () {
-  //       resolve(xhr.response);
-  //     };
-  //     xhr.onerror = function (e) {
-  //       console.log(e);
-  //       reject(new TypeError("Network request failed"));
-  //     };
-  //     xhr.responseType = "blob";
-  //     xhr.open("GET", uri, true);
-  //     xhr.send(null);
-  //   });
-
-  //   const ref = fireStorage.ref().child(new Date().toISOString());
-  //   const snapshot = await ref.put(blob);
-  //   blob.close();
-  // }
 
   return (
     <View>
