@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { TextInput, StyleSheet, View, TouchableOpacity } from 'react-native';
-import colors from './pallets';
+import React, { useState } from "react";
+import { TextInput, StyleSheet, View, TouchableOpacity } from "react-native";
+import colors from "./pallets";
+import Text from "./Text";
 
 const Input = ({
   RightComponent,
@@ -11,12 +12,14 @@ const Input = ({
   inputStyle,
   style,
   secureTextEntry,
+  label,
   ...props
 }) => {
   const [showPassword, setShowPassword] = useState(!secureTextEntry);
   const toggleSetShowPassword = () => setShowPassword((prev) => !prev);
   return (
     <View style={[styles.container, coverStyle]}>
+      {label && <Text style={{ marginBottom: 5 }}>{label}</Text>}
       <View
         style={[
           styles.content,
@@ -56,16 +59,16 @@ const styles = StyleSheet.create({
     marginBottom: 17,
   },
   content: {
-    alignItems: 'center',
+    alignItems: "center",
     borderColor: colors.textBox,
     backgroundColor: colors.textBox,
     borderRadius: 12,
     borderWidth: 1,
-    flexDirection: 'row',
+    flexDirection: "row",
     height: 55,
     paddingHorizontal: 16,
-    justifyContent: 'center',
-    width: '100%',
+    justifyContent: "center",
+    width: "100%",
   },
   // error: {
   //   alignSelf: 'center',
@@ -80,8 +83,8 @@ const styles = StyleSheet.create({
   input: {
     color: colors.inPut,
     flex: 1,
-    fontFamily: 'Poppins',
-    fontWeight: '400',
+    fontFamily: "Poppins",
+    fontWeight: "400",
     // paddingHorizontal: 16,
   },
   // labelText: {
